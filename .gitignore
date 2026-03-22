@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# Databases (Docker volumes)
+pg_data/
+
+# Environment variables
+.env
+
+# Poetry
+.pytest_cache/

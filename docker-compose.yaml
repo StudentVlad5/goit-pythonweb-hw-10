@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: contacts_db
+      POSTGRES_USER: vlad
+      POSTGRES_PASSWORD: qwerty
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
