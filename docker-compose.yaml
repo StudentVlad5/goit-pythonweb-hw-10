@@ -8,7 +8,12 @@ services:
       POSTGRES_PASSWORD: qwerty
     ports:
       - "5432:5432"
-
+    healthcheck:
+      # Команда pg_isready перевіряє, чи приймає база з'єднання
+      test: ["CMD-SHELL", "pg_isready -U vlad -d contacts_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   app:
     build: .
     ports:
@@ -16,4 +21,5 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
