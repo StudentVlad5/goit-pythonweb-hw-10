@@ -1,14 +1,34 @@
 from fastapi import FastAPI, Depends, HTTPException, Query, status
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from typing import List, Optional
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 import models, schemas
 from database import engine, get_db
 
 models.Base.metadata.create_all(bind=engine)
+limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(title="Contacts REST API")
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/api/me")
+@limiter.limit("5/minute") # Обмеження для /me
+async def root(request: Request):
+    return {"message": "Успішний доступ"}
 
 @app.post("/contacts/", response_model=schemas.ContactResponse, status_code=status.HTTP_201_CREATED)
 def create_contact(contact: schemas.ContactCreate, db: Session = Depends(get_db)):
