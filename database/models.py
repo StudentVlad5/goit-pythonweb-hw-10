@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Date, Text, func
-from sqlalchemy.orm import relationship
-from .db import Base
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date, DateTime, func
+from sqlalchemy.orm import relationship, DeclarativeBase
+
+class Base(DeclarativeBase):
+    pass
 
 class User(Base):
     __tablename__ = "users"
@@ -15,12 +17,14 @@ class User(Base):
 
 class Contact(Base):
     __tablename__ = "contacts"
-    id = Column(Integer, primary_key=True, index=True)
-    first_name = Column(String, index=True)
-    last_name = Column(String, index=True)
-    email = Column(String, unique=True, index=True)
-    phone = Column(String, index=True)
+    id = Column(Integer, primary_key=True)
+    first_name = Column(String(50), nullable=False)
+    last_name = Column(String(50), nullable=False)
+    email = Column(String(100), unique=True, index=True)
+    phone = Column(String(20))
     birthday = Column(Date)
-    additional_info = Column(Text, nullable=True)
+    additional_data = Column(String(250), nullable=True)
+    
+    # Зв'язок з користувачем
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
     user = relationship("User", backref="contacts")

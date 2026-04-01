@@ -1,27 +1,21 @@
-# 1. Використовуємо офіційний образ Python
 FROM python:3.13-slim
 
-# 2. Встановлюємо робочу директорію
+# Встановлюємо робочу директорію
 WORKDIR /app
 
-# 3. Встановлюємо змінні оточення, щоб Python не створював .pyc файли та виводив логи відразу
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# 4. Встановлюємо Poetry
+# Встановлюємо інструменти для збірки
 RUN pip install --no-cache-dir poetry
 
-# 5. Копіюємо лише файли конфігурації залежностей
-# Це дозволяє Docker кешувати шар із залежностями
-COPY pyproject.toml poetry.lock* /app/
+# Копіюємо файл конфігурації
+COPY pyproject.toml /app/
 
-# 6. Налаштовуємо Poetry: не створювати віртуальне оточення (в контейнері воно не потрібне)
-# Та встановлюємо залежності
+# Налаштовуємо Poetry: не створювати віртуальне оточення 
+# та встановлюємо залежності безпосередньо (це працює і без плагіна export)
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi --no-root
+    && poetry install --no-interaction --no-ansi --no-root --no-cache
 
-# 7. Копіюємо решту коду проєкту
+# Копіюємо всі файли проекту в /app
 COPY . /app/
 
-# 8. Команда для запуску (FastAPI + Uvicorn)
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Запуск. Оскільки main.py в корені
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
