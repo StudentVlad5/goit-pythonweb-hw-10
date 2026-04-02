@@ -17,7 +17,7 @@ conf = ConnectionConfig(
     TEMPLATE_FOLDER=Path(__file__).parent / 'templates',
 )
 
-async def send_email(email: str, username: str, host: str):
+def send_email(email: str, username: str, host: str):
     try:
         # Створюємо токен спеціально для верифікації
         token_verification = auth_service.create_email_token({"sub": email})
@@ -28,6 +28,6 @@ async def send_email(email: str, username: str, host: str):
             subtype=MessageType.html
         )
         fm = FastMail(conf)
-        await fm.send_message(message, template_name="email_template.html")
+        fm.send_message(message, template_name="email_template.html")
     except Exception as err:
         print(err)

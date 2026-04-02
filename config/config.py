@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     secret_key: str
     algorithm: str = "HS256"
     
-    # Cloudinary - переконайтеся, що назви точно такі як в .env
+    # Cloudinary 
     cloudinary_name: str
     cloudinary_api_key: str
     cloudinary_api_secret: str

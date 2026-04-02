@@ -10,7 +10,19 @@ services:
       - "5432:5432"
     healthcheck:
       # Команда pg_isready перевіряє, чи приймає база з'єднання
-      test: ["CMD-SHELL", "pg_isready -U vlad -d contacts_db"]
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-U",
+          "vlad",
+          "-d",
+          "contacts_db",
+          "-h",
+          "localhost",
+          "-p",
+          "5432",
+        ]
       interval: 5s
       timeout: 5s
       retries: 5

@@ -47,7 +47,7 @@ class Auth:
         return encoded_refresh_token
 
     # Функція для отримання поточного користувача з JWT токена
-    async def get_current_user(self, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    def get_current_user(self, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
         credentials_exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
@@ -65,7 +65,7 @@ class Auth:
         except JWTError:
             raise credentials_exception
 
-        user = await repository_users.get_user_by_email(email, db)
+        user = repository_users.get_user_by_email(email, db)
         if user is None:
             raise credentials_exception
         return user

@@ -24,15 +24,15 @@ async def create_contact(body: ContactCreate, user: User, db: Session) -> Contac
     db.refresh(contact)
     return contact
 
-async def remove_contact(contact_id: int, user: User, db: Session) -> Contact | None:
-    contact = await get_contact(contact_id, user, db)
+def remove_contact(contact_id: int, user: User, db: Session) -> Contact | None:
+    contact = get_contact(contact_id, user, db)
     if contact:
         db.delete(contact)
         db.commit()
     return contact
 
-async def update_contact(contact_id: int, body: ContactUpdate, user: User, db: Session) -> Contact | None:
-    contact = await get_contact(contact_id, user, db)
+def update_contact(contact_id: int, body: ContactUpdate, user: User, db: Session) -> Contact | None:
+    contact = get_contact(contact_id, user, db)
     if contact:
         for key, value in body.model_dump().items():
             setattr(contact, key, value)

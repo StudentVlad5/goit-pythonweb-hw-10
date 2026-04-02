@@ -11,12 +11,12 @@ from repository import users as repository_users
 router = APIRouter(prefix="/users", tags=["users"])
 
 @router.patch('/avatar', response_model=UserResponse)
-async def update_avatar_user(
+def update_avatar_user(
     file: UploadFile = File(), 
     current_user: User = Depends(auth_service.get_current_user),
     db: Session = Depends(get_db)
 ):
     public_id = f"ContactsApp/{current_user.username}"
     url = cloudinary_service.upload_image(file.file, public_id)
-    user = await repository_users.update_avatar(current_user.email, url, db)
+    user = repository_users.update_avatar(current_user.email, url, db)
     return user
