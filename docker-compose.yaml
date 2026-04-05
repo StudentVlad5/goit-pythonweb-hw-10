@@ -8,6 +8,8 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       # Команда pg_isready перевіряє, чи приймає база з'єднання
       test:
@@ -26,6 +28,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
   app:
     build: .
     ports:
@@ -35,3 +38,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+volumes:
+  postgres_data:

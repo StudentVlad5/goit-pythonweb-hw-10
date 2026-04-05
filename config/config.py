@@ -1,4 +1,4 @@
-from pydantic import ConfigDict, EmailStr
+from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     db_password: str
     db_name: str
     secret_key: str
+    base_url: str
     algorithm: str = "HS256"
     
     # Cloudinary 

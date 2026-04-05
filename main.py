@@ -1,19 +1,18 @@
 import uvicorn
-from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import  _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+
 
 from routes import auth, contacts, users
 from database.db import engine
 from database.models import Base
+from services.limiter import limiter
 
-# Створюємо таблиці в базі даних (якщо не використовуєте Alembic)
 Base.metadata.create_all(bind=engine)
 
-# Налаштовуємо лімітер запитів (наприклад, для /me)
-limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(title="Contacts REST API")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)

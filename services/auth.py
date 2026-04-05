@@ -5,6 +5,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
+from jose import JWTError, jwt
 
 from database.db import get_db
 from repository import users as repository_users
@@ -23,6 +24,21 @@ class Auth:
 
     def get_password_hash(self, password: str):
         return self.pwd_context.hash(password)
+
+    def create_email_token(self, data: dict):
+        to_encode = data.copy()
+        expire = datetime.utcnow() + timedelta(hours=24)
+        to_encode.update({"iat": datetime.utcnow(), "exp": expire, "scope": "email_token"})
+        return jwt.encode(to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM)
+
+    def get_email_from_token(self, token: str):
+        try:
+            payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
+            if payload.get("scope") != "email_token":
+                raise HTTPException(status_code=400, detail="Invalid token scope")
+            return payload.get("sub")
+        except JWTError:
+            raise HTTPException(status_code=400, detail="Invalid or expired token")
 
     # Генерація Access Token
     def create_access_token(self, data: dict, expires_delta: Optional[float] = None):
